@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ToDoListAPI.Core.Models;
 
 namespace ToDoListAPI.Infrastructure
 {
@@ -18,18 +19,18 @@ namespace ToDoListAPI.Infrastructure
             _httpClient = httpClient;
         }
 
-        public async Task<string> ReadFromAPI(string apiURL)
+        public async Task<IEnumerable<ToDo>> ReadFromAPI(string apiURL)
         {
             try
             {
                 var response = await _httpClient.GetAsync(apiURL);
                 response.EnsureSuccessStatusCode();
-                var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsAsync<IEnumerable<ToDo>>();
                 return data;
             }
             catch (Exception ex)
             {
-                return "default(T)";
+                return default;
 
             }
         }
