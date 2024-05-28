@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutoMapper.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -27,7 +29,7 @@ namespace ToDoListAPI.Infrastructure
             }
             catch (Exception ex)
             {
-                return "Error in getting data";
+                return "default(T)";
 
             }
         }

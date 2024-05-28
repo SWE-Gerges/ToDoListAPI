@@ -23,6 +23,8 @@ namespace ToDoListAPI.Controllers
         public IActionResult GetAll() 
         {
             var todos = _unitOfWork.ToDos.GetAll(new[] { "User" });
+            if (todos == null)
+                return BadRequest("Error, No Lists!");
             var dtos = _mapper.Map<IEnumerable<ToDoDTO>>(todos);
             return Ok(dtos);
         }
@@ -30,6 +32,8 @@ namespace ToDoListAPI.Controllers
         public IActionResult GetById(int id)
         {
             var toDo = _unitOfWork.ToDos.Find(t => t.Id == id, new[] {"User"});
+            if (toDo == null)
+                return BadRequest("Error, Not Found");
             ToDoDTO dto = _mapper.Map<ToDoDTO>(toDo);
             return Ok(dto);
         }
@@ -44,8 +48,11 @@ namespace ToDoListAPI.Controllers
         [HttpPut("id")]
         public IActionResult Update(ToDoDTO toDoDTO, int id)
         {
-            var todoEntity = _unitOfWork.ToDos.GetById(id);
-
+            
+                var todoEntity = _unitOfWork.ToDos.GetById(id);
+            if(todoEntity == null)
+                return BadRequest("Error, Not Found");
+            
             ToDo toDo = _mapper.Map<ToDo>(toDoDTO);
 
             todoEntity.Title = toDo.Title;
@@ -61,6 +68,8 @@ namespace ToDoListAPI.Controllers
         public IActionResult Delete(int id)
         {
           var todo =   _unitOfWork.ToDos.GetById(id);
+            if (todo == null)
+                return BadRequest("Error, Not Found");
             _unitOfWork.ToDos.Delete(todo);
             _unitOfWork.Save();
 

@@ -14,12 +14,14 @@ namespace ToDoListAPI.Infrastructure.UnitOfWork
     {
         private readonly ApplicationDbContext _context;
         public IGenericRepository<ToDo> ToDos { get; private set; }
+        public IGenericRepository<User> Users { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
 
             ToDos = new GenericRepository<ToDo>(_context);
+            Users = new GenericRepository<User>(_context);
         }
 
 
