@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using ToDoListAPI.Core.Interfaces;
+using ToDoListAPI.Infrastructure;
 using ToDoListAPI.Infrastructure.Data;
 using ToDoListAPI.Infrastructure.UnitOfWork;
 
@@ -16,6 +17,7 @@ namespace ToDoListAPI
 
             builder.Services.AddControllers();
             builder.Services.AddHttpClient();
+            builder.Services.AddScoped<APIConsumer>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ToDoListAPI.Core.Pagination;
+using ToDoListAPI.Infrastructure;
 
 namespace ToDoListAPI.Controllers
 {
@@ -7,27 +9,34 @@ namespace ToDoListAPI.Controllers
     [ApiController]
     public class LiveToDosController : ControllerBase
     {
-        private readonly HttpClient _httpClient;
+        private readonly APIConsumer _apiConsumer;
 
-        public LiveToDosController(HttpClient httpClient)
+        public LiveToDosController(APIConsumer apiConsumer)
         {
-            _httpClient = httpClient;
+            _apiConsumer = apiConsumer;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ReadData() 
+        public async Task<IActionResult> ReadData([FromQuery] PaginationParameters paginationParameters) 
         {
             try
             {
-                var response = await _httpClient.GetAsync("https://jsonplaceholder.typicode.com/todos");
-                response.EnsureSuccessStatusCode();
-                var data = await response.Content.ReadAsStringAsync();
-                return Ok(data);
+                var data = await _apiConsumer.ReadFromAPI("https://jsonplaceholder.typicode.com/todos");
+                var pagedData = data
+            .Skip((paginationParameters.PageNumber - 1) * paginationParameters.PageSize)
+            .Take(paginationParameters.PageSize)
+            .ToList();
+                return Ok(pagedData);
             }
-            catch (Exception ex) { 
-            return BadRequest(ex.Message);
+
+            catch (Exception ex) {
+
+                return BadRequest();
+            }
+
             
-            }
         }
+
+        
     }
 }
