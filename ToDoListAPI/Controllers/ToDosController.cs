@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ToDoListAPI.Core.DTO;
@@ -9,6 +10,7 @@ namespace ToDoListAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ToDosController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -43,7 +45,7 @@ namespace ToDoListAPI.Controllers
             ToDo toDo =  _mapper.Map<ToDo>(toDoDTO);
             _unitOfWork.ToDos.Create(toDo);
             _unitOfWork.Save();
-            return Ok(toDo);
+            return new ObjectResult(toDo) { StatusCode = 201 };
         }
         [HttpPut("id")]
         public IActionResult Update(ToDoDTO toDoDTO, int id)

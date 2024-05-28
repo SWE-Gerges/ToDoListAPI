@@ -1,8 +1,12 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using ToDoListAPI.Core.Interfaces;
 using ToDoListAPI.Infrastructure;
 using ToDoListAPI.Infrastructure.Data;
+using ToDoListAPI.Infrastructure.JWT;
 using ToDoListAPI.Infrastructure.UnitOfWork;
 
 namespace ToDoListAPI
@@ -29,6 +33,27 @@ namespace ToDoListAPI
             // Add DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            //Jwt Options
+            var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+
+
+            builder.Services.AddSingleton(jwtOptions);
+            //Authentication
+            builder.Services.AddAuthentication()
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.SaveToken = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtOptions.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtOptions.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Signingkey))
+                    };
+                });
             //Register Services
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             var app = builder.Build();
